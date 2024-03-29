@@ -12,6 +12,9 @@ export class WHIPClient
 		//Pending candidadtes
 		this.candidates = [];
 		this.endOfcandidates = false;
+
+		this.onOffer = offer => offer;
+		this.onAnswer = answer => answer;
 	}
 
 	async publish(pc, url, token)
@@ -23,24 +26,6 @@ export class WHIPClient
 		//Store pc object and token
 		this.token = token;
 		this.pc = pc;
-
-		//Listen for state change events
-		pc.onconnectionstatechange = (event) =>
-		{
-			switch (pc.connectionState)
-			{
-				case "connected":
-					// The connection has become fully connected
-					break;
-				case "disconnected":
-				case "failed":
-					// One or more transports has terminated unexpectedly or in an error
-					break;
-				case "closed":
-					// The connection has been closed
-					break;
-			}
-		}
 
 		//Listen for candidates
 		pc.onicecandidate = (event) =>
@@ -64,6 +49,7 @@ export class WHIPClient
 		}
 		//Create SDP offer
 		const offer = await pc.createOffer();
+		offer.sdp = this.onOffer(offer.sdp);
 
 		//Request headers
 		const headers = {
@@ -210,7 +196,7 @@ export class WHIPClient
 		//}
 
 		//And set remote description
-		await pc.setRemoteDescription({ type: "answer", sdp: answer });
+		await pc.setRemoteDescription({ type: "answer", sdp: this.onAnswer(answer) });
 	}
 
 	async restart()

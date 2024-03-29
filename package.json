@@ -1,6 +1,6 @@
 {
-	"name": "whip-whep",
-	"version": "1.1.1",
+	"name": "@binbat/whip-whep",
+	"version": "1.1.1-sdp",
 	"description": "WHIP and WHEP clients",
 	"scripts": {
 		"precommit": "npm run-script lint",
